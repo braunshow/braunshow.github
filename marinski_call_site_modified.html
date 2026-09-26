@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000">
+<title>전화</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Apple SD Gothic Neo",sans-serif}
+body{background:#111;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.phone{width:min(100vw,430px);height:min(100dvh,900px);background:#f7f7f7;position:relative;overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:600px){.phone{height:min(900px,calc(100vh - 28px));border:1px solid #333;border-radius:32px;box-shadow:0 20px 70px #0008}}
+.status{height:28px;flex:none;background:#f7f7f7;display:flex;justify-content:space-between;align-items:center;padding:0 18px;font-size:12px;font-weight:650}
+.header{height:55px;flex:none;border-bottom:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;background:#fafafa}
+.content{flex:1;overflow:auto;background:#f7f7f7}.view{display:none;min-height:100%;padding-bottom:18px}.view.active{display:block}
+.section-title{font-size:13px;color:#777;padding:18px 20px 7px}.row{background:#fff;border-bottom:1px solid #ddd;display:flex;align-items:center;min-height:66px;padding:10px 18px;cursor:pointer}.row:active{background:#e9e9e9}
+.avatar{width:42px;height:42px;border-radius:50%;background:#555;color:#fff;display:grid;place-items:center;font-size:14px;margin-right:12px;flex:none}
+.row-main{flex:1;min-width:0}.row-name{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-sub{font-size:12px;color:#888;margin-top:3px}.row-time{font-size:12px;color:#888;align-self:flex-start;margin-top:3px}.call-icon{color:#34c759;font-size:19px;margin-left:8px}
+.keypad{padding:20px 35px 10px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px 20px}.key{width:70px;height:70px;margin:auto;border:0;border-radius:50%;background:#e4e4e4;font-size:29px;cursor:pointer}.key small{display:block;font-size:9px;letter-spacing:1px;margin-top:-3px}
+.number{height:65px;text-align:center;font-size:28px;padding-top:13px;letter-spacing:2px}.call-btn{width:62px;height:62px;border:0;border-radius:50%;background:#34c759;color:#fff;font-size:28px;display:block;margin:4px auto 10px;cursor:pointer}
+.bottom{height:70px;flex:none;border-top:1px solid #ccc;background:#fafafa;display:flex;justify-content:space-around;align-items:center;padding-bottom:env(safe-area-inset-bottom)}
+.tab{border:0;background:none;color:#777;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}.tab.active{color:#007aff}.tab span{font-size:24px;line-height:20px}
+.detail{padding:28px 20px}.detail-avatar{width:78px;height:78px;border-radius:50%;background:#555;color:#fff;display:grid;place-items:center;font-size:24px;margin:0 auto 12px}.detail-name{text-align:center;font-size:21px;font-weight:700}.detail-time{text-align:center;color:#888;font-size:13px;margin:6px 0 28px}
+.record{background:#fff;border:1px solid #ddd;border-radius:18px;padding:16px}.record-head{display:flex;justify-content:space-between;color:#888;font-size:12px;margin-bottom:14px}.play{width:50px;height:50px;border:0;border-radius:50%;background:#007aff;color:#fff;font-size:20px;display:block;margin:0 auto 12px;cursor:pointer}.progress{height:4px;background:#ddd;border-radius:3px;overflow:hidden}.bar{height:100%;width:0;background:#007aff}
+.transcript{margin-top:18px;border-top:1px solid #eee;padding-top:15px;font-size:15px;line-height:2;white-space:pre-wrap;color:#222}.transcript span{opacity:.35}.transcript span.show{opacity:1}
+.back{position:absolute;left:12px;top:39px;border:0;background:none;font-size:28px;color:#007aff;display:none;z-index:5;cursor:pointer}
+.call-screen{position:absolute;inset:0;background:#181818;color:#fff;display:none;z-index:20;flex-direction:column;align-items:center;padding-top:110px}.call-screen.show{display:flex}.call-screen .avatar{width:88px;height:88px;font-size:25px;margin:0 0 18px}.call-screen h2{font-size:22px;margin:0}.call-status{color:#aaa;margin-top:8px}.end{position:absolute;bottom:80px;width:68px;height:68px;border:0;border-radius:50%;background:#ff3b30;color:#fff;font-size:28px}
+.contact-star{color:#ff9500}.toast{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);background:#333;color:#fff;padding:9px 15px;border-radius:18px;font-size:12px;display:none;z-index:30;white-space:nowrap}.toast.show{display:block}
+</style>
+</head>
+<body>
+<main class="phone">
+<div class="status"><span>05:40</span><span>▮▮▮　Wi‑Fi　100%</span></div>
+<button class="back" id="back">‹</button>
+<header class="header" id="header">최근 통화</header>
+
+<section class="content">
+<div id="recent" class="view active">
+<div class="section-title">최근 통화</div>
+<div class="row" data-call="1"><div class="avatar">S</div><div class="row-main"><div class="row-name">Сукин сын, которого я любил</div><div class="row-sub">부재중 전화</div></div><div class="row-time">며칠 전</div><div class="call-icon">↙</div></div>
+<div class="row" data-call="2"><div class="avatar">М</div><div class="row-main"><div class="row-name">Моя самая сладкая смерть</div><div class="row-sub">부재중 전화</div></div><div class="row-time">며칠 전</div><div class="call-icon">↙</div></div>
+<div class="row" data-call="3"><div class="avatar">류</div><div class="row-main"><div class="row-name">류대욱 대위</div><div class="row-sub">부재중 전화</div></div><div class="row-time">며칠 전</div><div class="call-icon">↙</div></div>
+<div class="row" data-call="4"><div class="avatar">М</div><div class="row-main"><div class="row-name">Моя самая сладкая смерть</div><div class="row-sub">부재중 전화</div></div><div class="row-time">며칠 전</div><div class="call-icon">↙</div></div>
+</div>
+
+<div id="contacts" class="view">
+<div class="section-title">연락처</div>
+<div class="row"><div class="avatar">М</div><div class="row-main"><div class="row-name">Моя самая сладкая смерть</div><div class="row-sub">단축번호 1</div></div></div>
+<div class="row"><div class="avatar">류</div><div class="row-main"><div class="row-name">류대욱 대위</div><div class="row-sub">연락처</div></div></div>
+</div>
+
+<div id="keypad" class="view">
+<div class="number" id="number">&nbsp;</div><button class="call-btn" id="callBtn">☎</button>
+<div class="keypad" id="keys">
+<button class="key" data-key="1">1</button><button class="key" data-key="2">2<small>ABC</small></button><button class="key" data-key="3">3<small>DEF</small></button>
+<button class="key" data-key="4">4<small>GHI</small></button><button class="key" data-key="5">5<small>JKL</small></button><button class="key" data-key="6">6<small>MNO</small></button>
+<button class="key" data-key="7">7<small>PQRS</small></button><button class="key" data-key="8">8<small>TUV</small></button><button class="key" data-key="9">9<small>WXYZ</small></button>
+<button class="key" data-key="*">*</button><button class="key" data-key="0">0<small>+</small></button><button class="key" data-key="#">#</button>
+</div>
+</div>
+
+<div id="contactDetail" class="view">
+ <div class="detail">
+  <div class="detail-avatar" id="cAvatar"></div>
+  <div class="detail-name" id="cName"></div>
+  <div class="detail-time" id="cDesc"></div>
+  <button class="call-btn" id="contactCall">☎</button>
+  <div style="text-align:center;color:#777;font-size:13px;margin-top:8px;">전화 걸기</div>
+ </div>
+ </div>
+
+ <div id="detail" class="view">
+<div class="detail">
+<div class="detail-avatar" id="dAvatar"></div><div class="detail-name" id="dName"></div><div class="detail-time">며칠 전 · 음성 기록</div>
+<div class="record"><div class="record-head"><span>녹음된 통화</span><span id="duration">00:00</span></div><button class="play" id="play">▶</button><div class="progress"><div class="bar" id="bar"></div></div><div class="transcript" id="transcript"></div></div>
+</div>
+</div>
+</section>
+
+<nav class="bottom">
+<button class="tab active" data-view="recent"><span>↙</span>최근 통화</button>
+<button class="tab" data-view="contacts"><span>●</span>연락처</button>
+<button class="tab" data-view="keypad"><span>⌨</span>키패드</button>
+</nav>
+
+<div class="call-screen" id="callScreen"><div class="avatar">М</div><h2>Моя самая сладкая смерть</h2><div class="call-status" id="callStatus">통화 중...</div><button class="end" id="endCall">✆</button></div>
+<div class="toast" id="toast"></div>
+</main>
+
+<script>
+const records={
+1:{name:"Сукин сын, которого я любил",avatar:"S",lines:["유빈 동지랑 가티 있는 거 봤서.","기때, 둘이 좋아보이더라 야.","···.","무슨 일 있는 거디?","······하아.","나중에 확인하믄 련락 보내라."]},
+2:{name:"Моя самая сладкая смерть",avatar:"М",lines:["소좌님.","···하하, 이렇게 말하려니 좀···.","웃기고 그러네요.","바쁘신 것 같아서 전화했어요.","······.","···나중에 다시 전화할게요."]},
+3:{name:"류대욱 대위",avatar:"류",lines:["소좌 동지.","···리택기 동지한테 련락이 왔습네다.","소좌 동지 보는 대로 데려 가라고.","안 바쁘실 때 련락 보시면 다시 련락 주시라요!","끊갔습네다."]},
+4:{name:"Моя самая сладкая смерть",avatar:"М",lines:["소좌님, 있죠.","정략결혼하신다고 들었어요.","···.","······하기 싫은 결혼이라면 안 하시면 안 돼요?","저랑 같이 도망가요.","···제발요.","······.","아니에요. 끊을게요. 못 들은 걸로 해주세요."]}
+};
+
+const views={recent:document.getElementById("recent"),contacts:document.getElementById("contacts"),keypad:document.getElementById("keypad"),detail:document.getElementById("detail")};
+const header=document.getElementById("header"),back=document.getElementById("back");
+let previous="recent", currentId=null, playing=false, number="", holdTimer=null, contactId=null, sweetCalls=0, callTimer=null;
+
+function show(name){Object.values(views).forEach(v=>v.classList.remove("active"));views[name].classList.add("active");document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===name));header.textContent=name==="recent"?"최근 통화":name==="contacts"?"연락처":name==="keypad"?"키패드":name==="contactDetail"?"연락처":"통화 기록";back.style.display=(name==="detail"||name==="contactDetail")?"block":"none";}
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>show(t.dataset.view));
+document.querySelectorAll("[data-call]").forEach(row=>row.onclick=()=>openRecord(+row.dataset.call));
+document.querySelectorAll(".contact-row").forEach(row=>row.onclick=()=>openContact(+row.dataset.contact));
+
+function openRecord(id){currentId=id;const r=records[id];document.getElementById("dAvatar").textContent=r.avatar;document.getElementById("dName").textContent=r.name;document.getElementById("transcript").innerHTML="";document.getElementById("bar").style.width="0";document.getElementById("duration").textContent="00:00";document.getElementById("play").textContent="▶";playing=false;show("detail");}
+back.onclick=()=>show(previous);
+
+const contacts={
+  1:{name:"리택기 동무",desc:"가시 아버지",avatar:"리"},
+  3:{name:"류대욱 대위",desc:"류대욱 대위",avatar:"류"},
+  4:{name:"Моя самая сладкая смерть",desc:"유빈 · 단축번호 1",avatar:"М"}
+};
+function openContact(id){
+ contactId=id; const c=contacts[id];
+ document.getElementById("cAvatar").textContent=c.avatar;
+ document.getElementById("cName").textContent=c.name;
+ document.getElementById("cDesc").textContent=c.desc;
+ show("contactDetail");
+}
+document.getElementById("contactCall").onclick=()=>makeContactCall(contactId);
+
+function makeContactCall(id){
+ const c=contacts[id];
+ if(id===4){
+   sweetCalls++;
+   startCallScreen(c.name);
+   if(sweetCalls>=3){
+     setTimeout(()=>startSweetConversation(),1900);
+   } else {
+     setTimeout(()=>endNoAnswer(),1900);
+   }
+ }else{
+   startCallScreen(c.name);
+   setTimeout(()=>endNoAnswer(),1900);
+ }
+}
+function startCallScreen(name){
+ const s=document.getElementById("callScreen");
+ s.querySelector(".avatar").textContent=contacts[contactId]?.avatar||"М";
+ s.querySelector("h2").textContent=name;
+ s.classList.add("show");
+ document.getElementById("callStatus").textContent="연결 중...";
+}
+function endNoAnswer(){
+ const s=document.getElementById("callScreen");
+ document.getElementById("callStatus").textContent="응답 없음";
+ setTimeout(()=>{s.classList.remove("show");toast("상대방이 받지 않았습니다.");},1200);
+}
+function startSweetConversation(){
+ const s=document.getElementById("callScreen");
+ document.getElementById("callStatus").textContent="통화 연결됨";
+ const old=s.querySelector(".end");
+ const box=document.createElement("div");
+ box.id="liveTranscript";
+ box.style.cssText="width:82%;margin-top:28px;font-size:15px;line-height:2;text-align:left;max-height:390px;overflow:auto;color:#eee";
+ s.insertBefore(box,old);
+ const lines=["···소좌님?","···.","······무슨 일이세요?","······.","···저는 소좌님이, 행복하게 오래오래 사셨으면 좋겠어요.","저랑, 저랑 같이··· 떠나버려요.","제발요···.","······.","···상트페트르부르크 마린스키 극장에서, 기다릴게요.","거기서, 다시 만나요."];
+ let i=0;
+ const add=()=>{if(i>=lines.length)return; const d=document.createElement("div");d.textContent=lines[i++];box.appendChild(d);box.scrollTop=box.scrollHeight;callTimer=setTimeout(add,3000);};
+ add();
+}
+document.getElementById("play").onclick=async()=>{
+ if(playing)return; playing=true; const r=records[currentId],box=document.getElementById("transcript");
+ box.innerHTML=r.lines.map((x,i)=>`<span id="line${i}">${x}</span>`).join("<br>");
+ document.getElementById("play").textContent="Ⅱ";
+ for(let i=0;i<r.lines.length;i++){await new Promise(res=>setTimeout(res,3000));document.getElementById("line"+i).classList.add("show");document.getElementById("bar").style.width=((i+1)/r.lines.length*100)+"%";document.getElementById("duration").textContent="00:"+String((i+1)*3).padStart(2,"0");}
+ playing=false;document.getElementById("play").textContent="↻";
+};
+
+document.querySelectorAll(".key").forEach(btn=>{
+ const key=btn.dataset.key;
+ btn.addEventListener("click",()=>{if(key==="1"&&btn.dataset.long==="yes"){btn.dataset.long="";return}number+=key;document.getElementById("number").textContent=number;});
+ btn.addEventListener("pointerdown",()=>{if(key==="1"){holdTimer=setTimeout(()=>{btn.dataset.long="yes";number="1";document.getElementById("number").textContent="1";makeCall();},700);}});
+ ["pointerup","pointercancel","pointerleave"].forEach(e=>btn.addEventListener(e,()=>clearTimeout(holdTimer)));
+});
+document.getElementById("callBtn").onclick=makeCall;
+
+function makeCall(){
+ if(number!=="1"){toast("연결할 번호가 없습니다.");return;}
+ sweetCalls++;
+ startCallScreen("Моя самая сладкая смерть");
+ if(sweetCalls>=3) setTimeout(()=>startSweetConversation(),1900);
+ else setTimeout(()=>{endNoAnswer();number="";document.getElementById("number").innerHTML="&nbsp;";},1900);
+}
+document.getElementById("endCall").onclick=()=>{
+ clearTimeout(callTimer);
+ const live=document.getElementById("liveTranscript"); if(live) live.remove();
+ document.getElementById("callScreen").classList.remove("show");number="";document.getElementById("number").innerHTML="&nbsp;";
+};
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1800);}
+</script>
+</body>
+</html>
